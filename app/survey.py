@@ -1,14 +1,13 @@
 # survey.py
 import streamlit as st
-import pymongo
 import pandas as pd
 import uuid
 
-def susu():
-    # Connect to MongoDB
+def susu(collection):
+    """# Connect to MongoDB
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["survey_db"]
-    collection = db["survey_responses"]
+    collection = db["survey_responses"]"""
 
     # Create the survey form
     st.title("Student Happiness and Academic Performance Survey")
@@ -74,5 +73,5 @@ def susu():
             "add_comment": additional_comments
         }
         collection.insert_one(response)
-        st.success("Survey response submitted successfully!")
-        st.success(f"Please save this token for future use incase you wish to update/delete your preferences. \n Token: {token}")
+        st.success("Survey response submitted successfully! Please save this token for future use incase you wish to update/delete your preferences.")
+        st.success(f"{token}")

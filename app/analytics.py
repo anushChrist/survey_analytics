@@ -1,13 +1,12 @@
 # analytics.py
 import streamlit as st
-import pymongo
 import pandas as pd
 
 # Connect to MongoDB
-def anal():
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
+def anal(collection):
+    """client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["survey_db"]
-    collection = db["survey_responses"]
+    collection = db["survey_responses"]"""
 
     # Analyze survey data
     st.title("Survey Analytics")
