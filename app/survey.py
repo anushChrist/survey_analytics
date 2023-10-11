@@ -13,14 +13,14 @@ def susu(collection):
     st.title("Student Happiness and Academic Performance Survey")
 
     # Demographic Information
-    age = st.number_input("1. Age:")
+    age = st.number_input("1. Age:", min_value=18, max_value=50, step=1)
     gender = st.selectbox("2. Gender:", ["Male", "Female", "Non-binary", "Prefer not to say"])
     academic_program = st.selectbox("3. Academic Program:", ["Bachelors", "Masters", "Doctorate"])
     year_of_study = st.selectbox("4. Year of Study:", ["1st year", "2nd Year", "3rd Year", "4th Year", "5th Year"])
 
     # Academic Performance
     gpa = st.slider("5. On a scale of 1 to 5, rate your academic performance:", 1, 5)
-    study_habits = st.slider("6. On a scale of 1 to 5, rate your study habits:", 1, 5)
+    study_habits = st.slider("6. On a scale of 1 to 5, rate your study habits:", 1, 5) 
     study_hours = st.number_input("7. On average, how many hours do you study per day?")
     class_attendance = st.selectbox("8. How often do you miss classes?", ["Never", "Rarely", "Sometimes", "Often"])
 
