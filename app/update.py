@@ -9,7 +9,7 @@ def pupu(collection):
     # Input field for token
     token = st.text_input("Enter Token:")
     # Demographic Information
-    new_age = st.selectbox("1. Age:", ["18-20", "21-24", "25-29", "30 or older"])
+    new_age = st.number_input("1. Age:")
     new_gender = st.selectbox("2. Gender:", ["Male", "Female", "Non-binary", "Prefer not to say"])
     new_academic_program = st.selectbox("3. Academic Program:", ["Bachelors", "Masters", "Doctorate"])
     new_year_of_study = st.selectbox("4. Year of Study:", ["1st year", "2nd Year", "3rd Year", "4th Year", "5th Year"])

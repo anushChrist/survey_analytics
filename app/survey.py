@@ -13,7 +13,7 @@ def susu(collection):
     st.title("Student Happiness and Academic Performance Survey")
 
     # Demographic Information
-    age = st.selectbox("1. Age:", ["18-20", "21-24", "25-29", "30 or older"])
+    age = st.number_input("1. Age:")
     gender = st.selectbox("2. Gender:", ["Male", "Female", "Non-binary", "Prefer not to say"])
     academic_program = st.selectbox("3. Academic Program:", ["Bachelors", "Masters", "Doctorate"])
     year_of_study = st.selectbox("4. Year of Study:", ["1st year", "2nd Year", "3rd Year", "4th Year", "5th Year"])

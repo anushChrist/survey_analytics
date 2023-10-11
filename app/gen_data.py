@@ -10,7 +10,7 @@ collection = db["survey_responses"]
 
 # Function to generate random data
 def generate_random_data():
-    age = random.choice(["18-20", "21-24", "25-29", "30 or older"])
+    age = random.randint(18, 50)
     gender = random.choice(["Male", "Female", "Non-binary", "Prefer not to say"])
     academic_program = random.choice(["Bachelors", "Masters", "Doctorate"])
     year_of_study = random.choice(["1st year", "2nd Year", "3rd Year", "4th Year", "5th Year"])
