@@ -3,25 +3,28 @@ import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split as ttt
 from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor as dt
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pymongo
+
 
 # Connect to MongoDB
 def anal(collection):
 
     df = pd.DataFrame(list(collection.find()))
     st.title("Analytics")
-
     df = df.set_index("_id")
 
-    # COLUMN SPLITTING
-    num = [x for x in df if df[x].dtype == 'int64' and df[x].nunique() < 11]
-    cat = [x for x in df if df[x].dtype == 'object' and len(str(df[x].iloc[0])) < 30]
+    #COLUMN SPLITTING
+    num = [x for x in df if str(df[x].dtype) == 'int64' if df[x].nunique() < 11]
+    cat = [x for x in df if str(df[x].dtype) == 'object' if len(df[x][0]) <30]
     prf = ['gpa', 'stud_hb', 'stud_hr', 'attend']
     ovhap = ['hap_rate', 'hap_fact']
     hap = ['acad_impc', 'acad_press', 'acad_guilt', 'ch_guilt', 'gr_guilt', 'bal_contri', 'proc', 'wl_bal', 'extra_curr_hap', 'attd_impc']
+   
+    st.header("The data:")
+    st.dataframe(df.head(5))
 
     # Summary statistics
     st.header("Summary Statistics")
@@ -39,7 +42,7 @@ def anal(collection):
     st.header("Academic Program Distribution")
     st.bar_chart(df['acad_prg'].value_counts())
 
-    # Happiness Factors
+    #Happiness Factors
     st.header("Happiness Factors")
     f, a = plt.subplots(1, 1)
     df[ovhap].groupby('hap_fact').mean().plot(kind='pie', subplots=True, ax=a)
@@ -49,83 +52,98 @@ def anal(collection):
     st.header("Year of Study Distribution")
     st.bar_chart(df['yo_stud'].value_counts())
 
-    # Select either Happiness or Performance
+    # Select either Happiness or Performance 
     st.header("Select Happiness or Performance")
-    opt = st.selectbox("Select which metric to expand upon: ", ['Happiness', 'Performance'])
+    opt = st.selectbox("Select which metric to expand upon: ",['Happiness','Performance'])
 
     if opt == "Performance":
-        st.write("Performance attributes: ", prf)
+        st.write("Performance attributes: ",prf)
         genre = st.radio(
             "Choose the type of plot",
-            ["KDE & Hist", "Groupby", "Scatter", "Violin & Boxplot"],
-            format_func=lambda x: "Density/Distribution" if x == "KDE & Hist" else ("Groupby various categorical attributes" if x == "Groupby" else "Outlier visualisation")
-        )
-        if genre == "KDE & Hist":
+            ["KDE", "Groupby", "Scatter", "Violin & Boxplot"],
+            captions = ["Density/Distribution", "Groupby various categorical attributes","Pairwise scatter", "Outlier visualisation"])
+        if genre == "KDE":
             fig, ax = plt.subplots()
             sns.kdeplot(df[prf].groupby('attend').mean(), ax=ax)
+            st.subheader("KDE plot Student Performance metric")
             st.pyplot(fig)
-            #fig.savefig("kdeplot.png")
 
         elif genre == "Groupby":
             fig, ax = plt.subplots()
-            df[prf].groupby('attend').mean().plot(kind='barh', subplots=True)
+            df[prf].groupby('attend').mean().plot(kind='barh', subplots=False, ax=ax)
+            st.subheader("Distribution of Student Performance metric, grouped by Attendence")
             st.pyplot(fig)
-            #fig.savefig("groupby.png")
-
+            
         elif genre == "Scatter":
-            fig, ax = plt.subplots()
-            sns.pairplot(df[prf], hue='attend')
+            fig = sns.pairplot(df[prf], kind='hist',hue='attend',)
+            st.subheader("Pairwise scatter plot of happiness metrics")
             st.pyplot(fig)
-            #fig.savefig("pairplot.png")
 
         elif genre == "Violin & Boxplot":
-            fig, ax = plt.subplots()
-            sns.violinplot(df[prf].groupby('attend').mean())
+            fig, ax = plt.subplots(1,2)
+            sns.violinplot(df[prf].groupby('attend').mean(),ax=ax[0])
+            sns.boxenplot(df[prf].groupby('attend').mean(),ax=ax[1])
+            st.subheader("Violin and Boxenplots")
             st.pyplot(fig)
-            #fig.savefig("violinboxplot.png")
+
     elif opt == "Happiness":
-        st.write("Happiness attributes: ", hap)
+        st.write("Happiness attributes: ",hap)
         genre = st.radio(
             "Choose the type of plot",
             ["KDE & Hist", "Groupby", "Scatter", "Violin & Boxplot"],
-            format_func=lambda x: "Density/Distribution" if x == "KDE & Hist" else ("Groupby various categorical attributes" if x == "Groupby" else "Outlier visualisation")
-        )
+            captions = ["Density/Distribution", "Groupby various categorical attributes","Pairwise scatter", "Outlier visualisation"])
         if genre == "KDE & Hist":
             fig, ax = plt.subplots()
-            sns.kdeplot(df[hap].groupby('attd_impc').mean(), ax=ax)
+            lo = df[hap].drop('attd_impc',axis=1)
+            lo = (lo - lo.mean())/lo.std()
+            sns.kdeplot(lo, ax=ax)
+            st.subheader("KDE for happiness metrics")
             st.pyplot(fig)
 
         elif genre == "Groupby":
             fig, ax = plt.subplots()
-            df[hap].groupby('attd_impc').mean().plot(kind='barh', subplots=True)
+            
+            df[hap].groupby('attd_impc').mean().plot(kind='barh', subplots=False,ax=ax)
+            st.subheader("Barplot grouped by attendence impact")
             st.pyplot(fig)
 
         elif genre == "Scatter":
-            sns.pairplot(df[hap], hue='attd_impc')
-            st.pyplot()
-            
-
-        elif genre == "Violin & Boxplot":
-            fig, ax = plt.subplots()
-            sns.violinplot(df[hap].groupby('attd_impc').mean())
+            fig = sns.pairplot(df[hap], kind='hist',hue='attd_impc',)
+            st.subheader("Pairwise scatter plot of happiness metrics")
             st.pyplot(fig)
 
-    # Correlation Analysis
+        elif genre == "Violin & Boxplot":
+            fig, ax = plt.subplots(1,2)
+            plt.xticks(rotation=90)
+            sns.violinplot(df[hap],ax=ax[0])
+            ax[0].tick_params(axis='x', labelrotation = 90)
+
+            plt.xticks(rotation=90)
+            sns.boxenplot(df[hap],ax=ax[1])
+            st.subheader("Outlier Detection via box and violin plots")
+            st.pyplot(fig)
+
+     # Correlation Analysis
     st.header("Correlation Analysis")
     optio = st.selectbox("Select the correlation matrix among: ", ['Performance', 'Happiness', 'All'])
     if optio == 'Performance':
         fig, ax = plt.subplots()
-        sns.heatmap(df[prf].drop('attend', axis=1).corr())
+        sns.heatmap(df[prf].drop('attend', axis=1).corr(),ax=ax)
+        st.subheader("Correlation matrix of performance metrics")
         st.pyplot(fig)
 
     elif optio == 'Happiness':
         fig, ax = plt.subplots()
-        sns.heatmap(df[hap].drop('attd_impc', axis=1).corr())
+        sns.heatmap(df[hap].drop('attd_impc', axis=1).corr(),ax=ax)
+        st.subheader("Correlation matrix of happiness metrics")
+
         st.pyplot(fig)
 
     elif optio == 'All':
         fig, ax = plt.subplots()
-        sns.heatmap(df[num].corr())
+        sns.heatmap(df[num].corr(),ax=ax)
+        st.subheader("Correlation matrix of all metrics")
+
         st.pyplot(fig)
 
 
@@ -157,12 +175,39 @@ def anal(collection):
     st.write(f"The mean rating of performance is {float(lr.intercept_)} and if happiness increases by one unit, performance increases by {float(lr.coef_)} units.")
 
     # Scatter plot of the regression line
+    st.subheader("Visualising Linear Regression")
     fig, ax = plt.subplots()
-    sns.scatterplot(x=xte.reshape(1, -1)[0], y=yte.reshape(1, -1)[0], color='r')
+    sns.scatterplot(x=xte.reshape(1, -1)[0], y=yte.reshape(1, -1)[0], color='r',ax=ax)
+    sns.scatterplot(x=xte.reshape(1, -1)[0], y=lr.predict(xte).reshape(1, -1)[0], color='b',ax=ax)
     st.pyplot(fig)
 
+    #Lasso Regression
+    st.subheader("Decision tree")
+
+    x = pd.concat([df[hap].drop('attd_impc', axis=1), df[ovhap].drop('hap_fact', axis=1)], axis=1)
+    st.subheader("Features")
+    st.dataframe(x)
+
+    xtr, xte, ytr, yte = ttt(x.values, y.values.reshape(-1, 1), test_size=slid)
+    
+    reg = dt()
+
+    reg.fit(xtr, ytr)
+
+    st.write(f'The R-square score for decision tree is {reg.score(xte, yte)}')
+
+    st.subheader("Feature importance")
+    val ={k:i for k,i in zip(x.columns,reg.feature_importances_)}
+    val = pd.Series(val).sort_values(ascending=False)
+    st.write(val)
+
+    st.subheader("Visualising fit")
     fig, ax = plt.subplots()
-    sns.scatterplot(x=xte.reshape(1, -1)[0], y=lr.predict(xte).reshape(1, -1)[0], color='b')
-
-
-
+    sns.scatterplot(x=yte.reshape(1, -1)[0], y=reg.predict(xte).reshape(1, -1)[0], color='b',ax=ax)
+    st.pyplot(fig)
+    
+    st.write("THERE IS CORRELATION!!")
+    
+    
+    
+    
