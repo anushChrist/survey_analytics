@@ -2,7 +2,7 @@
 import streamlit as st
 
 
-def pupu(collection):
+def update(collection):
 
     st.title("Update Records")
 

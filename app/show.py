@@ -1,7 +1,7 @@
 # show.py
 import streamlit as st
 
-def didi(collection):
+def show(collection):
     st.title("Display Record")
     # Input field for token
     token = st.text_input("Enter Token:")

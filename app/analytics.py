@@ -10,7 +10,7 @@ import seaborn as sns
 
 
 # Connect to MongoDB
-def anal(collection):
+def analytics(collection):
 
     df = pd.DataFrame(list(collection.find()))
     st.title("Analytics")

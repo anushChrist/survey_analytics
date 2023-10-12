@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import uuid
 
-def susu(collection):
+def survey(collection):
     """# Connect to MongoDB
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["survey_db"]

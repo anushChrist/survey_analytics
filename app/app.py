@@ -16,12 +16,12 @@ st.sidebar.title("Navigation")
 selected_option = st.sidebar.radio("Select Option", ["Survey", "Analytics", "Show", "Update", "Delete"])
 
 if selected_option == "Survey":
-    survey.susu(collection)
+    survey.survey(collection)
 elif selected_option == "Analytics":
-    analytics.anal(collection)
+    analytics.analytics(collection)
 elif selected_option == "Show":
-    show.didi(collection)
+    show.show(collection)
 elif selected_option == "Delete":
-    delete.dudu(collection)
+    delete.delete(collection)
 elif selected_option == "Update":
-    update.pupu(collection)
+    update.update(collection)

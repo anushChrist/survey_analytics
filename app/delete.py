@@ -1,7 +1,7 @@
 # delete_update.py
 import streamlit as st
 
-def dudu(collection):
+def delete(collection):
     # Connect to MongoDB
     """client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["survey_db"]
