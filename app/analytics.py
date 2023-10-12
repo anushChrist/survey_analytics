@@ -163,7 +163,7 @@ def analytics(collection):
     data = pd.concat([x, y], axis=1)
     st.dataframe(data)
 
-    slid = st.slider("Enter test size", min_value=0.0, max_value=1.0, value=0.2, step=0.05)
+    slid = st.slider("Enter test size", min_value=0.1, max_value=0.9, value=0.2, step=0.05)
 
     xtr, xte, ytr, yte = ttt(x.values.reshape(-1, 1), y.values.reshape(-1, 1), test_size=slid)
 
@@ -181,7 +181,7 @@ def analytics(collection):
     sns.scatterplot(x=xte.reshape(1, -1)[0], y=lr.predict(xte).reshape(1, -1)[0], color='b',ax=ax)
     st.pyplot(fig)
 
-    #Lasso Regression
+    #Decision Tree
     st.subheader("Decision tree")
 
     x = pd.concat([df[hap].drop('attd_impc', axis=1), df[ovhap].drop('hap_fact', axis=1)], axis=1)
